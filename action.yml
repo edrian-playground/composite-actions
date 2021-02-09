@@ -24,7 +24,7 @@ inputs:
   image-name:
     description: 'Docker image name'
     required: true
-    default: 'us-south'
+    default: ''
   deployment-name:
     description: 'Deployment name on Kubernetes'
     required: true
@@ -63,21 +63,16 @@ runs:
         ibmcloud cr login
       shell: bash
 
-      # Build the Docker image
     - id: build-with-docker
-      run: #|
-          #echo $VCAP_LOCAL >> ./web/api/vcap-local.json
-          #echo REACT_APP_MAPBOX_ACCESS_TOKEN=$REACT_APP_MAPBOX_ACCESS_TOKEN >> ./web/client/.env.local
+      run: |
         docker build --tag "${{ inputs.registery-hostname }}"/"${{ inputs.icr-namespace }}"/"${{ inputs.image-name }}:"${{ inputs.github-sha }}" ./web/
       shell: bash
 
-    # Push the image to IBM Container Registry
     - id: push-to-icr
       run: |
         docker push ${{ inputs.registery-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
       shell: bash
 
-      # Deploy the Docker image to the IKS cluster
     - id: deploy-to-iks
       run: |
         ibmcloud ks cluster config --cluster ${{ inputs.k8s-cluster-name }}
