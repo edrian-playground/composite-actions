@@ -5,10 +5,24 @@ inputs:
     description: 'Who to greet'
     required: true
     default: 'World'
+  cloud-api-key:
+    description: 'IBM Cloud API Key'
+    required: false
+    default: '${{ secrets.IBM_CLOUD_API_KEY }}'
+  cloud-region:
+    description: 'IBM Cloud Region'
+    required: false
+    default: 'us-south'
 outputs:
   random-number:
     description: "Random number"
     value: ${{ steps.random-number-generator.outputs.random-id }}
+  install-ibmcloud-cli:
+    description: "Installing ibmcloud cli"
+    value: ${{ steps.ibm-cloud-cli.outputs }}
+  login-to-ibmcloud:
+    description: "Installing ibmcloud cli"
+    value: ${{ steps.login-to-ibmcloud-cli.outputs }}
 runs:
   using: "composite"
   steps:
@@ -19,3 +33,17 @@ runs:
       shell: bash
     - run: ${{ github.action_path }}/goodbye.sh
       shell: bash
+
+    - id: ibmcloud-cli
+      run: |
+        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+        ibmcloud --version
+        ibmcloud config --check-version=false
+        ibmcloud plugin install -f kubernetes-service
+        ibmcloud plugin install -f container-registry
+
+    - id: login-to-ibmcloud-cli
+      run: |
+        ibmcloud login --apikey "${IBM_CLOUD_API_KEY}" -r "${IBM_CLOUD_REGION}" -g default
+        ibmcloud cr region-set "${IBM_CLOUD_REGION}"
+        ibmcloud cr login
