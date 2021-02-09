@@ -64,7 +64,7 @@ runs:
       shell: bash
 
     - id: build-with-docker
-      run: docker build --tag ${{ inputs.registery-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }} ./web/
+      run: docker build --tag "${{ inputs.registery-hostname }}"/"${{ inputs.icr-namespace }}"/"${{ inputs.image-name }}":"${{ inputs.github-sha }}" ./web/
       shell: bash
 
     - id: push-to-icr
