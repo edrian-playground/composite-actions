@@ -68,7 +68,7 @@ runs:
       shell: bash
 
     - id: push-to-icr
-      run: docker push ${{ inputs.registry-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
+      run: docker push "${{ inputs.registry-hostname }}"/"${{ inputs.icr-namespace }}"/"${{ inputs.image-name }}":"${{ inputs.github-sha }}"
       shell: bash
 
     - id: deploy-to-iks
