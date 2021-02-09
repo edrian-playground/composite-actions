@@ -1,6 +1,10 @@
 name: 'Hello World'
-description: 'Greet someone'
+description: 'IKS build deploy action '
 inputs:
+  github-sha:
+    description: 'GitHub SHA value'
+    required: true
+    default: ''
   cloud-api-key:
     description: 'IBM Cloud API Key'
     required: true
@@ -9,6 +13,30 @@ inputs:
     description: 'IBM Cloud Region'
     required: false
     default: 'us-south'
+  icr-namespace:
+    description: 'IBM Cloud Container Registry namespace'
+    required: true
+    default: ''
+  registry-hostname:
+    description: 'IBM Cloud Registry hostname'
+    required: false
+    default: 'us.icr.io'
+  image-name:
+    description: 'Docker image name'
+    required: true
+    default: 'us-south'
+  deployment-name:
+    description: 'Deployment name on Kubernetes'
+    required: true
+    default: ''
+  k8s-cluster-name:
+    description: 'Kubernetes cluster name'
+    required: true
+    default: ''
+  k8s-cluster-namespace:
+    description: 'Kubernetes namespace'
+    required: true
+    default: ''
 outputs:
   install-ibmcloud-cli:
     description: "Installing ibmcloud cli"
@@ -35,3 +63,25 @@ runs:
         ibmcloud cr login
       shell: bash
 
+      # Build the Docker image
+    - id: build-with-docker
+      run: #|
+          #echo $VCAP_LOCAL >> ./web/api/vcap-local.json
+          #echo REACT_APP_MAPBOX_ACCESS_TOKEN=$REACT_APP_MAPBOX_ACCESS_TOKEN >> ./web/client/.env.local
+        docker build --tag "${{ inputs.registery-hostname }}"/"${{ inputs.icr-namespace }}"/"${{ inputs.image-name }}:"${{ inputs.github-sha }}" ./web/
+      shell: bash
+
+    # Push the image to IBM Container Registry
+    - id: push-to-icr
+      run: |
+        docker push ${{ inputs.registery-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
+      shell: bash
+
+      # Deploy the Docker image to the IKS cluster
+    - id: deploy-to-iks
+      run: |
+        ibmcloud ks cluster config --cluster ${{ inputs.k8s-cluster-name }}
+        kubectl config current-context
+        kubectl set image --namespace=${{ inputs.k8s-cluster-namespace }} deployments/${{ inputs.deployment-name }} \
+        ${{ inputs.deployment-name }}=${{ inputs.registery-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
+      shell: bash
