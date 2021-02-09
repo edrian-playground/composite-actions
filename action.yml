@@ -8,7 +8,7 @@ inputs:
   cloud-api-key:
     description: 'IBM Cloud API Key'
     required: false
-    default: '${{ secrets.IBM_CLOUD_API_KEY }}'
+    default: ''
   cloud-region:
     description: 'IBM Cloud Region'
     required: false
