@@ -68,7 +68,7 @@ runs:
       shell: bash
 
     - id: push-to-icr
-      run: docker push ${{ inputs.registery-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
+      run: docker push ${{ inputs.registry-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
       shell: bash
 
     - id: deploy-to-iks
@@ -76,5 +76,5 @@ runs:
         ibmcloud ks cluster config --cluster ${{ inputs.k8s-cluster-name }}
         kubectl config current-context
         kubectl set image --namespace=${{ inputs.k8s-cluster-namespace }} deployments/${{ inputs.deployment-name }} \
-        ${{ inputs.deployment-name }}=${{ inputs.registery-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
+        ${{ inputs.deployment-name }}=${{ inputs.registry-hostname }}/${{ inputs.icr-namespace }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
       shell: bash
