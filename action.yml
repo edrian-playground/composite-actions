@@ -1,22 +1,15 @@
 name: 'Hello World'
 description: 'Greet someone'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
-    required: true
-    default: 'World'
   cloud-api-key:
     description: 'IBM Cloud API Key'
-    required: false
+    required: true
     default: ''
   cloud-region:
     description: 'IBM Cloud Region'
     required: false
     default: 'us-south'
 outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-id }}
   install-ibmcloud-cli:
     description: "Installing ibmcloud cli"
     value: ${{ steps.ibm-cloud-cli.outputs }}
@@ -26,14 +19,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: echo Hello ${{ inputs.who-to-greet }}.
-      shell: bash
-    - id: random-number-generator
-      run: echo "::set-output name=random-id::$(echo $RANDOM)"
-      shell: bash
-    - run: ${{ github.action_path }}/goodbye.sh
-      shell: bash
-
     - id: ibmcloud-cli
       run: |
         curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
