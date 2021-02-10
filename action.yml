@@ -1,14 +1,12 @@
-name: 'Hello World'
-description: 'IKS build deploy action '
+name: 'IKS Build, Push and Deploy Action'
+description: 'This action builds a docker image, pushes to IBM Cloud Registry and sets a Kubernetes deployment image'
 inputs:
   github-sha:
     description: 'GitHub SHA value'
     required: true
-    default: ''
   cloud-api-key:
     description: 'IBM Cloud API Key'
     required: true
-    default: ''
   cloud-region:
     description: 'IBM Cloud Region'
     required: false
@@ -16,7 +14,6 @@ inputs:
   icr-namespace:
     description: 'IBM Cloud Container Registry namespace'
     required: true
-    default: ''
   registry-hostname:
     description: 'IBM Cloud Registry hostname'
     required: false
@@ -24,26 +21,15 @@ inputs:
   image-name:
     description: 'Docker image name'
     required: true
-    default: ''
   deployment-name:
     description: 'Deployment name on Kubernetes'
     required: true
-    default: ''
   k8s-cluster-name:
     description: 'Kubernetes cluster name'
     required: true
-    default: ''
   k8s-cluster-namespace:
     description: 'Kubernetes namespace'
     required: true
-    default: ''
-outputs:
-  install-ibmcloud-cli:
-    description: "Installing ibmcloud cli"
-    value: ${{ steps.ibm-cloud-cli.outputs }}
-  login-to-ibmcloud:
-    description: "Installing ibmcloud cli"
-    value: ${{ steps.login-to-ibmcloud-cli.outputs }}
 runs:
   using: "composite"
   steps:
